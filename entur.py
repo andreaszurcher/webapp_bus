@@ -63,7 +63,12 @@ async def find_nearby_stops(lat: float, lon: float) -> list[dict[str, Any]]:
     return stops
 
 
-async def find_next_departure_for_line(stop_id: str, line: str, destination_contains: str | None = None) -> dict[str, Any] | None:
+async def find_next_departure_for_line(
+    stop_id: str,
+    line: str,
+    destination_contains: str | None = None,
+    destination_excludes: str | None = None,
+) -> dict[str, Any] | None:
     now = datetime.now(timezone.utc)
     start_time = now.strftime("%Y-%m-%dT%H:%M:%S+00:00")
 
@@ -137,12 +142,13 @@ async def find_next_departure_for_line(stop_id: str, line: str, destination_cont
         if str(public_code) != str(line):
             continue
 
-        if destination_contains:
-            front_text = (
-                call.get("destinationDisplay", {}) or {}
-            ).get("frontText", "")
-            if destination_contains.lower() not in front_text.lower():
-                continue
+        front_text = (call.get("destinationDisplay", {}) or {}).get("frontText", "")
+
+        if destination_contains and destination_contains.lower() not in front_text.lower():
+            continue
+
+        if destination_excludes and destination_excludes.lower() in front_text.lower():
+            continue
 
         departure_time = call.get("expectedDepartureTime") or call.get("aimedDepartureTime")
         if not departure_time:

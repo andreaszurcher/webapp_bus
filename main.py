@@ -39,6 +39,7 @@ async def next_bus(
     lon: float = Query(..., description="Longitude"),
     line: str = Query(..., description="Bus line number"),
     destination: str | None = Query(None, description="Filter by destination text"),
+    exclude_destination: str | None = Query(None, description="Exclude by destination text"),
 ) -> dict:
     try:
         stops = await find_nearby_stops(lat=lat, lon=lon)
@@ -57,6 +58,7 @@ async def next_bus(
                 stop_id=stop["id"],
                 line=line,
                 destination_contains=destination,
+                destination_excludes=exclude_destination,
             )
         except Exception as exc:
             raise HTTPException(
@@ -80,5 +82,5 @@ async def next_bus(
 
     return {
         "found": False,
-        "message": f"Fant ingen avgang for linje {line} ved noen av de {len(stops)} nærmeste stoggene.",
+        "message": f"Fant ingen avgang for linje {line} ved noen av de {len(stops)} nærmeste stoppene.",
     }

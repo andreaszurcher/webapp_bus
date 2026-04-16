@@ -42,11 +42,16 @@ findBtn.addEventListener("click", async () => {
 
       try {
         const distHome = haversineDistance(lat, lon, HOME_LAT, HOME_LON);
-        const destination = distHome <= HOME_RADIUS_METERS ? "Trondheim S" : "Vikåsen";
+        const atHome = distHome <= HOME_RADIUS_METERS;
 
-        const response = await fetch(
-          `/api/next-bus?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&line=${encodeURIComponent(line)}&destination=${encodeURIComponent(destination)}`
-        );
+        const params = new URLSearchParams({ lat, lon, line });
+        if (atHome) {
+          params.set("exclude_destination", "Vikåsen");
+        } else {
+          params.set("destination", "Vikåsen");
+        }
+
+        const response = await fetch(`/api/next-bus?${params}`);
 
         const data = await response.json();
 
