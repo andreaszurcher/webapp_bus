@@ -38,6 +38,7 @@ async def next_bus(
     lat: float = Query(..., description="Latitude"),
     lon: float = Query(..., description="Longitude"),
     line: str = Query(..., description="Bus line number"),
+    destination: str | None = Query(None, description="Filter by destination text"),
 ) -> dict:
     try:
         stops = await find_nearby_stops(lat=lat, lon=lon)
@@ -55,6 +56,7 @@ async def next_bus(
             departure = await find_next_departure_for_line(
                 stop_id=stop["id"],
                 line=line,
+                destination_contains=destination,
             )
         except Exception as exc:
             raise HTTPException(

@@ -148,6 +148,14 @@ button:active {
   line-height: 1;
 }
 
+.direction {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #64748b;
+  margin-top: 8px;
+  letter-spacing: 0.01em;
+}
+
 .info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

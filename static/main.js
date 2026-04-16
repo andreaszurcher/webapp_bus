@@ -1,3 +1,7 @@
+const HOME_LAT = 63.42988354760209;
+const HOME_LON = 10.415298400392226;
+const HOME_RADIUS_METERS = 400;
+
 let map = null;
 let stopMarker = null;
 let userMarker = null;
@@ -10,6 +14,7 @@ const resultEl = document.getElementById("result");
 const stopEl = document.getElementById("stop");
 const distanceEl = document.getElementById("distance");
 const minutesEl = document.getElementById("minutes");
+const directionEl = document.getElementById("direction");
 
 findBtn.addEventListener("click", async () => {
   const line = lineInput.value.trim();
@@ -36,8 +41,11 @@ findBtn.addEventListener("click", async () => {
       showStatus("Henter bussdata...");
 
       try {
+        const distHome = haversineDistance(lat, lon, HOME_LAT, HOME_LON);
+        const destination = distHome <= HOME_RADIUS_METERS ? "Vikåsen" : "Trondheim S";
+
         const response = await fetch(
-          `/api/next-bus?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&line=${encodeURIComponent(line)}`
+          `/api/next-bus?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&line=${encodeURIComponent(line)}&destination=${encodeURIComponent(destination)}`
         );
 
         const data = await response.json();
@@ -55,6 +63,7 @@ findBtn.addEventListener("click", async () => {
         stopEl.textContent = data.stop || "-";
         distanceEl.textContent = formatDistance(data.distance_meters);
         minutesEl.textContent = formatMinutes(data.minutes_until_departure);
+        directionEl.textContent = data.destination ? `mot ${data.destination}` : "";
 
         resultEl.classList.remove("hidden");
         showStatus("");
@@ -103,6 +112,17 @@ function formatDistance(distance) {
   }
 
   return `${(meters / 1000).toFixed(1)} km`;
+}
+
+function haversineDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371000;
+  const toRad = (deg) => (deg * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
 function showMap(userLat, userLon, stopLat, stopLon, stopName) {
