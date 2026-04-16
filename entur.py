@@ -7,7 +7,7 @@ import httpx
 ENTUR_GEOCODER_URL = "https://api.entur.io/geocoder/v1/reverse"
 ENTUR_JOURNEY_URL = "https://api.entur.io/journey-planner/v3/graphql"
 
-ET_CLIENT_NAME = os.getenv("ET_CLIENT_NAME", "andreas-busapp")
+ET_CLIENT_NAME = os.getenv("ET_CLIENT_NAME", "andreas-bustrack")
 
 HEADERS = {
     "ET-Client-Name": ET_CLIENT_NAME,
