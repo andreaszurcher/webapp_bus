@@ -42,7 +42,7 @@ findBtn.addEventListener("click", async () => {
 
       try {
         const distHome = haversineDistance(lat, lon, HOME_LAT, HOME_LON);
-        const destination = distHome <= HOME_RADIUS_METERS ? "Vikåsen" : "Trondheim S";
+        const destination = distHome <= HOME_RADIUS_METERS ? "Trondheim S" : "Vikåsen";
 
         const response = await fetch(
           `/api/next-bus?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&line=${encodeURIComponent(line)}&destination=${encodeURIComponent(destination)}`
